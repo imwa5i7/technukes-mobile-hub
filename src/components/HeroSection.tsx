@@ -72,7 +72,7 @@ export const HeroSection = () => {
             <Button 
               variant="hero-outline" 
               size="xl"
-              onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => document.getElementById('work')?.scrollIntoView({ behavior: 'smooth' })}
             >
               View Our Work
             </Button>
