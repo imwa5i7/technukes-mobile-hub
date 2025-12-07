@@ -64,7 +64,7 @@ export const HeroSection = () => {
             <Button 
               variant="hero" 
               size="xl"
-              onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => document.getElementById('start-project')?.scrollIntoView({ behavior: 'smooth' })}
             >
               Start Your Project
               <ArrowRight className="w-5 h-5" />
