@@ -3,11 +3,11 @@ import { Linkedin, Twitter } from "lucide-react";
 
 const teamMembers = [
   {
-    name: "Alex Johnson",
+    name: "Wasil Khan",
     role: "CEO & Founder",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
+    image: "https://i.postimg.cc/Y0rsSrCZ/Whats-App-Image-2024-08-05-at-11-38-29.jpg",
     linkedin: "#",
-    twitter: "#",
+    twitter: "#", 
   },
   {
     name: "Sarah Chen",
