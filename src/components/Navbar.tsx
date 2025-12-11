@@ -2,17 +2,38 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const navLinks = [
-  { name: "Services", href: "#services", isRoute: false },
-  { name: "About", href: "#about", isRoute: false },
-  { name: "Blog", href: "/blog", isRoute: true },
-  { name: "Contact", href: "#contact", isRoute: false },
+  { name: "Services", href: "/#services", section: "services" },
+  { name: "About", href: "/#about", section: "about" },
+  { name: "Blog", href: "/blog", section: null },
+  { name: "Contact", href: "/#contact", section: "contact" },
 ];
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleNavClick = (e: React.MouseEvent, link: typeof navLinks[0]) => {
+    if (link.section) {
+      e.preventDefault();
+      if (location.pathname === "/") {
+        // Already on home page, just scroll
+        const element = document.getElementById(link.section);
+        element?.scrollIntoView({ behavior: "smooth" });
+      } else {
+        // Navigate to home then scroll
+        navigate("/");
+        setTimeout(() => {
+          const element = document.getElementById(link.section!);
+          element?.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+      }
+    }
+    setIsOpen(false);
+  };
 
   return (
     <motion.nav
@@ -24,17 +45,26 @@ export const Navbar = () => {
       <div className="container-custom section-padding !py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <a href="#" className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2">
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-xl">T</span>
             </div>
             <span className="text-xl font-bold text-foreground">Technukes</span>
-          </a>
+          </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) =>
-              link.isRoute ? (
+              link.section ? (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  onClick={(e) => handleNavClick(e, link)}
+                  className="text-muted-foreground hover:text-foreground transition-colors duration-300 font-medium cursor-pointer"
+                >
+                  {link.name}
+                </a>
+              ) : (
                 <Link
                   key={link.name}
                   to={link.href}
@@ -42,14 +72,6 @@ export const Navbar = () => {
                 >
                   {link.name}
                 </Link>
-              ) : (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  className="text-muted-foreground hover:text-foreground transition-colors duration-300 font-medium"
-                >
-                  {link.name}
-                </a>
               )
             )}
             <Button variant="hero" size="default">
@@ -79,7 +101,16 @@ export const Navbar = () => {
             >
               <div className="flex flex-col gap-4">
                 {navLinks.map((link) =>
-                  link.isRoute ? (
+                  link.section ? (
+                    <a
+                      key={link.name}
+                      href={link.href}
+                      onClick={(e) => handleNavClick(e, link)}
+                      className="text-muted-foreground hover:text-foreground transition-colors duration-300 font-medium py-2 cursor-pointer"
+                    >
+                      {link.name}
+                    </a>
+                  ) : (
                     <Link
                       key={link.name}
                       to={link.href}
@@ -88,15 +119,6 @@ export const Navbar = () => {
                     >
                       {link.name}
                     </Link>
-                  ) : (
-                    <a
-                      key={link.name}
-                      href={link.href}
-                      onClick={() => setIsOpen(false)}
-                      className="text-muted-foreground hover:text-foreground transition-colors duration-300 font-medium py-2"
-                    >
-                      {link.name}
-                    </a>
                   )
                 )}
                 <Button variant="hero" size="lg" className="mt-2">
