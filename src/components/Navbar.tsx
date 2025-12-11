@@ -2,11 +2,13 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link, useLocation } from "react-router-dom";
 
 const navLinks = [
-  { name: "Services", href: "#services" },
-  { name: "About", href: "#about" },
-  { name: "Contact", href: "#contact" },
+  { name: "Services", href: "#services", isRoute: false },
+  { name: "About", href: "#about", isRoute: false },
+  { name: "Blog", href: "/blog", isRoute: true },
+  { name: "Contact", href: "#contact", isRoute: false },
 ];
 
 export const Navbar = () => {
@@ -31,15 +33,25 @@ export const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                className="text-muted-foreground hover:text-foreground transition-colors duration-300 font-medium"
-              >
-                {link.name}
-              </a>
-            ))}
+            {navLinks.map((link) =>
+              link.isRoute ? (
+                <Link
+                  key={link.name}
+                  to={link.href}
+                  className="text-muted-foreground hover:text-foreground transition-colors duration-300 font-medium"
+                >
+                  {link.name}
+                </Link>
+              ) : (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  className="text-muted-foreground hover:text-foreground transition-colors duration-300 font-medium"
+                >
+                  {link.name}
+                </a>
+              )
+            )}
             <Button variant="hero" size="default">
               Get Started
             </Button>
@@ -66,16 +78,27 @@ export const Navbar = () => {
               className="md:hidden mt-4 pb-4"
             >
               <div className="flex flex-col gap-4">
-                {navLinks.map((link) => (
-                  <a
-                    key={link.name}
-                    href={link.href}
-                    onClick={() => setIsOpen(false)}
-                    className="text-muted-foreground hover:text-foreground transition-colors duration-300 font-medium py-2"
-                  >
-                    {link.name}
-                  </a>
-                ))}
+                {navLinks.map((link) =>
+                  link.isRoute ? (
+                    <Link
+                      key={link.name}
+                      to={link.href}
+                      onClick={() => setIsOpen(false)}
+                      className="text-muted-foreground hover:text-foreground transition-colors duration-300 font-medium py-2"
+                    >
+                      {link.name}
+                    </Link>
+                  ) : (
+                    <a
+                      key={link.name}
+                      href={link.href}
+                      onClick={() => setIsOpen(false)}
+                      className="text-muted-foreground hover:text-foreground transition-colors duration-300 font-medium py-2"
+                    >
+                      {link.name}
+                    </a>
+                  )
+                )}
                 <Button variant="hero" size="lg" className="mt-2">
                   Get Started
                 </Button>
