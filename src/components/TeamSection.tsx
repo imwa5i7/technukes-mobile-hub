@@ -1,38 +1,26 @@
 import { motion } from "framer-motion";
 import { Linkedin, Twitter } from "lucide-react";
+import { useSupabase } from "@/hooks/useSupabase";
 
-const teamMembers = [
-  {
-    name: "Wasil Khan",
-    role: "CEO & Founder",
-    image: "https://i.postimg.cc/Y0rsSrCZ/Whats-App-Image-2024-08-05-at-11-38-29.jpg",
-    linkedin: "#",
-    twitter: "#", 
-  },
-  {
-    name: "Sarah Chen",
-    role: "Lead Developer",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=face",
-    linkedin: "#",
-    twitter: "#",
-  },
-  {
-    name: "Michael Roberts",
-    role: "AI Specialist",
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face",
-    linkedin: "#",
-    twitter: "#",
-  },
-  {
-    name: "Emily Parker",
-    role: "Product Manager",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face",
-    linkedin: "#",
-    twitter: "#",
-  },
-];
+// TeamMember type matching Supabase table
+interface TeamMember {
+  id: number; // primary key
+  name: string;
+  role: string;
+  image: string;
+  linkedin: string;
+  twitter: string;
+}
+
 
 export const TeamSection = () => {
+  const { data, loading, error } = useSupabase<TeamMember>("team_members");
+
+  if (loading) return <p className="text-center py-12">Loading team members…</p>;
+  if (error) return <p className="text-center text-red-500 py-12">Error: {error}</p>;
+
+  const teamMembers = data!;
+
   return (
     <section id="team" className="section-padding bg-muted/30">
       <div className="container-custom">
@@ -57,7 +45,7 @@ export const TeamSection = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {teamMembers.map((member, index) => (
             <motion.div
-              key={member.name}
+              key={member.id}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
