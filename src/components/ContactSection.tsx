@@ -5,53 +5,112 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useSupabase } from "@/hooks/useSupabase";
 
-const contactInfo = [
-  {
-    icon: Mail,
-    label: "Email",
-    value: "hello@technukes.com",
-    href: "mailto:hello@technukes.com",
-  },
-  {
-    icon: Phone,
-    label: "Phone",
-    value: "+1 (555) 123-4567",
-    href: "tel:+15551234567",
-  },
-  {
-    icon: MapPin,
-    label: "Location",
-    value: "San Francisco, CA",
-    href: "#",
-  },
-];
+// -------------------------------------------------
+// ContactInfo type – matches the Supabase table
+// -------------------------------------------------
+interface ContactInfo {
+  id: number;
+  label: string;
+  value: string;
+  href: string;
+  // Icon name stored as a string (e.g., "Mail")
+  icon: string;
+}
+
+// -------------------------------------------------
+// Map string names to actual Lucide components
+// -------------------------------------------------
+const iconMap: Record<string, any> = {
+  Mail,
+  Phone,
+  MapPin,
+};
 
 export const ContactSection = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
+  // -------------------------------------------------
+  // Fetch contact info from Supabase
+  // -------------------------------------------------
+  const {
+    data: contactInfoData,
+    loading: contactLoading,
+    error: contactError,
+  } = useSupabase<ContactInfo>("contact_info");
+
+  // -------------------------------------------------
+  // Form submit – call the Resend‑based Edge Function
+  // -------------------------------------------------
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    
-    toast({
-      title: "Message sent!",
-      description: "We'll get back to you as soon as possible.",
-    });
-    
-    setIsSubmitting(false);
-    (e.target as HTMLFormElement).reset();
+
+    const form = e.target as HTMLFormElement;
+    const name = (form.elements.namedItem("name") as HTMLInputElement).value;
+    const email = (form.elements.namedItem("email") as HTMLInputElement).value;
+    const subject = (form.elements.namedItem("subject") as HTMLInputElement).value;
+    const message = (form.elements.namedItem("message") as HTMLTextAreaElement).value;
+
+    try {
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+      const res = await fetch(
+        `${supabaseUrl}/functions/v1/send-contact-email`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${supabaseAnonKey}`,
+          },
+          body: JSON.stringify({ name, email, subject, message }),
+        }
+      );
+      if (!res.ok) throw new Error("Network response was not ok");
+
+      toast({
+        title: "Message sent!",
+        description: "We’ll get back to you shortly.",
+      });
+      form.reset();
+    } catch (err) {
+      console.error(err);
+      toast({
+        title: "Oops! Something went wrong",
+        description:
+          "Your message could not be sent. Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
+  // -------------------------------------------------
+  // Loading / error UI for the contact info list
+  // -------------------------------------------------
+  if (contactLoading)
+    return <p className="text-center py-12">Loading contact info…</p>;
+  if (contactError)
+    return (
+      <p className="text-center text-red-500 py-12">
+        Error loading contact info
+      </p>
+    );
+
+  const contactInfo = contactInfoData!; // safe after loading check
+
+  // -------------------------------------------------
+  // Render the whole section
+  // -------------------------------------------------
   return (
     <section id="contact" className="relative">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-t from-primary/5 via-transparent to-transparent" />
-      
+
       <div className="container-custom section-padding relative z-10">
         {/* Section Header */}
         <motion.div
@@ -65,11 +124,10 @@ export const ContactSection = () => {
             Get In Touch
           </span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6">
-            Let's Build Something{" "}
-            <span className="gradient-text">Amazing Together</span>
+            Let's Build Something <span className="gradient-text">Amazing Together</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Ready to transform your idea into reality? Reach out and let's discuss 
+            Ready to transform your idea into reality? Reach out and let's discuss
             how we can help bring your vision to life.
           </p>
         </motion.div>
@@ -110,6 +168,7 @@ export const ContactSection = () => {
                   />
                 </div>
               </div>
+
               <div>
                 <label htmlFor="subject" className="block text-sm font-medium mb-2">
                   Subject
@@ -122,6 +181,7 @@ export const ContactSection = () => {
                   className="bg-secondary/50 border-border focus:border-primary"
                 />
               </div>
+
               <div>
                 <label htmlFor="message" className="block text-sm font-medium mb-2">
                   Message
@@ -135,6 +195,7 @@ export const ContactSection = () => {
                   className="bg-secondary/50 border-border focus:border-primary resize-none"
                 />
               </div>
+
               <Button
                 type="submit"
                 variant="hero"
@@ -159,23 +220,26 @@ export const ContactSection = () => {
             <div className="p-8 rounded-2xl card-gradient border border-border">
               <h3 className="text-xl font-bold mb-6">Contact Information</h3>
               <div className="space-y-6">
-                {contactInfo.map((item, index) => (
-                  <a
-                    key={index}
-                    href={item.href}
-                    className="flex items-center gap-4 group"
-                  >
-                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-300">
-                      <item.icon className="w-5 h-5 text-primary" />
-                    </div>
-                    <div>
-                      <div className="text-sm text-muted-foreground">{item.label}</div>
-                      <div className="font-medium group-hover:text-primary transition-colors duration-300">
-                        {item.value}
+                {contactInfo.map((item) => {
+                  const Icon = iconMap[item.icon] ?? Mail;
+                  return (
+                    <a
+                      key={item.id}
+                      href={item.href}
+                      className="flex items-center gap-4 group"
+                    >
+                      <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-300">
+                        <Icon className="w-5 h-5 text-primary" />
                       </div>
-                    </div>
-                  </a>
-                ))}
+                      <div>
+                        <div className="text-sm text-muted-foreground">{item.label}</div>
+                        <div className="font-medium group-hover:text-primary transition-colors duration-300">
+                          {item.value}
+                        </div>
+                      </div>
+                    </a>
+                  );
+                })}
               </div>
             </div>
 
@@ -183,7 +247,7 @@ export const ContactSection = () => {
             <div className="p-8 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 border border-primary/20">
               <h3 className="text-xl font-bold mb-3">Quick Response Guaranteed</h3>
               <p className="text-muted-foreground mb-4">
-                We typically respond within 24 hours. For urgent inquiries, 
+                We typically respond within 24 hours. For urgent inquiries,
                 feel free to call us directly.
               </p>
               <div className="text-sm text-primary font-medium">
