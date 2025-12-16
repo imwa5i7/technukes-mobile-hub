@@ -9,9 +9,9 @@ export const HeroSection = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[128px] animate-pulse-glow" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/20 rounded-full blur-[128px] animate-pulse-glow" style={{ animationDelay: "1.5s" }} />
-      
+
       {/* Grid Pattern */}
-      <div 
+      <div
         className="absolute inset-0 opacity-[0.02]"
         style={{
           backgroundImage: `linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)`,
@@ -21,6 +21,17 @@ export const HeroSection = () => {
 
       <div className="container-custom section-padding relative z-10 pt-32">
         <div className="max-w-4xl mx-auto text-center">
+          {/* Logo */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="flex justify-center mb-6"
+          >
+            <img src="/logo_dark.png" alt="Technukes Logo" className="h-24 md:h-32 w-auto object-contain drop-shadow-2xl dark:hidden block" />
+            <img src="/logo.png" alt="Technukes Logo" className="h-24 md:h-32 w-auto object-contain drop-shadow-2xl hidden dark:block" />
+          </motion.div>
+
           {/* Badge */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -50,7 +61,7 @@ export const HeroSection = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
           >
-            Technukes specializes in mobile app development, AI solutions, and cutting-edge tech services. 
+            Technukes specializes in mobile app development, AI solutions, and cutting-edge tech services.
             We turn your vision into reality with precision and innovation.
           </motion.p>
 
@@ -61,16 +72,16 @@ export const HeroSection = () => {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="flex flex-col sm:flex-row gap-4 justify-center"
           >
-            <Button 
-              variant="hero" 
+            <Button
+              variant="hero"
               size="xl"
               onClick={() => document.getElementById('start-project')?.scrollIntoView({ behavior: 'smooth' })}
             >
               Start Your Project
               <ArrowRight className="w-5 h-5" />
             </Button>
-            <Button 
-              variant="hero-outline" 
+            <Button
+              variant="hero-outline"
               size="xl"
               onClick={() => document.getElementById('work')?.scrollIntoView({ behavior: 'smooth' })}
             >

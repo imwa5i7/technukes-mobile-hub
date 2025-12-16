@@ -15,7 +15,7 @@ export const AboutSection = () => {
     <section id="about" className="relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-primary/5 to-transparent" />
-      
+
       <div className="container-custom section-padding relative z-10">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Left Content */}
@@ -33,8 +33,8 @@ export const AboutSection = () => {
               <span className="gradient-text">Users Love</span>
             </h2>
             <p className="text-muted-foreground text-lg mb-8 leading-relaxed">
-              At Technukes, we don't just write code – we craft digital experiences. 
-              Our passion for innovation and commitment to excellence drives us to 
+              At Technukes, we don't just write code – we craft digital experiences.
+              Our passion for innovation and commitment to excellence drives us to
               deliver solutions that exceed expectations and stand the test of time.
             </p>
 

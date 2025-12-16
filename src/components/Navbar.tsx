@@ -1,6 +1,6 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
@@ -16,6 +16,42 @@ export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const [theme, setTheme] = useState<"dark" | "light">(() => {
+    if (typeof window !== "undefined") {
+      return document.documentElement.classList.contains("dark") ? "dark" : "light";
+    }
+    return "dark";
+  });
+
+  // Initialize theme
+  React.useEffect(() => {
+    const isDark = document.documentElement.classList.contains("dark");
+    setTheme(isDark ? "dark" : "light");
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+    if (newTheme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  };
+
+  const handleLogoClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (location.pathname === "/") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      navigate("/");
+      // Wait for navigation then scroll to top
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }, 100);
+    }
+    setIsOpen(false);
+  };
 
   const handleNavClick = (e: React.MouseEvent, link: typeof navLinks[0]) => {
     if (link.section) {
@@ -46,9 +82,9 @@ export const Navbar = () => {
       <div className="container-custom section-padding !py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <img src="/logo.png" alt="Technukes" className="h-10 w-auto object-contain" />
-          </Link>
+          <a href="/" onClick={handleLogoClick} className="flex items-center gap-2">
+            <img src={theme === "light" ? "/logo_dark.png" : "/logo.png"} alt="Technukes" className="h-10 w-auto object-contain" />
+          </a>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
@@ -72,19 +108,35 @@ export const Navbar = () => {
                 </Link>
               )
             )}
-            <Button variant="hero" size="default">
-              Get Started
-            </Button>
+
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-full hover:bg-secondary transition-colors"
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+
+
           </div>
 
           {/* Mobile Menu Button */}
-          <button
-            className="md:hidden text-foreground"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label="Toggle menu"
-          >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          <div className="flex items-center gap-4 md:hidden">
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-full hover:bg-secondary transition-colors"
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+            <button
+              className="text-foreground"
+              onClick={() => setIsOpen(!isOpen)}
+              aria-label="Toggle menu"
+            >
+              {isOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Navigation */}
@@ -119,9 +171,7 @@ export const Navbar = () => {
                     </Link>
                   )
                 )}
-                <Button variant="hero" size="lg" className="mt-2">
-                  Get Started
-                </Button>
+
               </div>
             </motion.div>
           )}
